@@ -13,3 +13,12 @@
       loop: '{{ user_list }}'
       loop_control:
         loop_var: user_item
+
+    - name: Create a role in IAM
+      amazon.aws.iam_role:
+        name: '{{ role_item.name }}'
+        assume_role_policy_document: '{{ role_item.assume_role_policy_document | to_json }}'
+        state: present
+      loop: '{{ role_list }}'
+      loop_control:
+        loop_var: role_item

@@ -1,11 +1,8 @@
 user_list:
-  - test_user_1:
-      name: testuser1
-      managed_policies:
-        - arn:aws:iam::aws:policy/ReadOnlyAccess
-  - test_user_2:
-      name: testuser2
-      managed_policies:
-        - arn:aws:iam::aws:policy/AdministratorAccess
-  - test_user_3:
-      name: testuser3
+  - name: testuser1
+    managed_policies:
+      - arn:aws:iam::aws:policy/ReadOnlyAccess
+  - name: testuser2
+    managed_policies:
+      - arn:aws:iam::aws:policy/AdministratorAccess
+  - name: testuser3
