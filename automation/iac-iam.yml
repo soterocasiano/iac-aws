@@ -3,6 +3,8 @@
   gather_facts: false
   tasks:
     - name: Load Configs
+      vars:
+        config_target: iam
       ansible.builtin.include_tasks: tasks/copy_configs.yml
 
     - name: Create a user in IAM

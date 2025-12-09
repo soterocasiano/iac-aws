@@ -1,0 +1,8 @@
+- name: AWS EC2
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Load Configs
+      vars:
+        config_target: ec2
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
