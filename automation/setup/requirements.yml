@@ -1,0 +1,31 @@
+---
+collections:
+  - name: ansible.utils
+    # ansible.utils repo prefixes version tags with 'v', which Galaxy dislikes.
+    # Instead, version is specified at end of git URL.
+    source: https://github.com/ansible-collections/ansible.utils.git,v3.1.0
+    type: git
+  - name: ansible.posix
+    source: https://github.com/ansible-collections/ansible.posix.git
+    type: git
+    version: 1.5.2
+  - name: community.general
+    version: 8.4.0
+    source: https://github.com/ansible-collections/community.general
+    type: git
+  - name: amazon.aws
+    version: 7.3.0
+    source: https://github.com/ansible-collections/amazon.aws
+    type: git
+  - name: community.aws
+    version: 7.1.0
+    source: https://github.com/ansible-collections/community.aws
+    type: git
+  - name: community.crypto
+    version: 2.18.0
+    source: https://github.com/ansible-collections/community.crypto.git
+    type: git
+  - name: datadog.dd
+    version: 5.1.0
+    source: https://github.com/ansible-collections/datadog.git
+    type: git

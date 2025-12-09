@@ -1,0 +1,15 @@
+- name: AWS IAM
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Load Configs
+      anisble.builtin.include_tasks: tasks/clone_configs.yml
+
+    - name: Create a user in IAM
+      amazon.aws.iam_user:
+        name: '{{ user_item.name }}'
+        managed_policies: '{{ user_item.managed_policies | default([]) }}'
+        state: present
+      loop: '{{ user_list }}'
+      loop_control:
+        loop_var: user_item
