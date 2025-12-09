@@ -9,12 +9,7 @@ PY="${2:-}"  # Allow for explicitly set Python version
 
 # If no Python specified as parameter, auto-detect
 if [ -z "$PY" ]; then
-    # Check if Python 3.12 exists, otherwise use Python 3.10
-    if [ -f "/usr/local/bin/python3.12" ]; then
-        PY="/usr/local/bin/python3.12"
-    else
-        PY="/usr/local/bin/python3.10"
-    fi
+    PY="$(which python3 || which python)"
 fi
 
 TRUSTED='--trusted-host pypi.org --trusted-host files.pythonhosted.org'

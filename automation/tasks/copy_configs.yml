@@ -1,0 +1,24 @@
+- name: Debug Config Folder Path
+  ansible.builtin.debug:
+    msg: "Configs directory is set to {{ configs_dir }}"
+
+- name: Find Config Files
+  ansible.builtin.find:
+    paths: '{{ configs_dir }}'
+    patterns: '*.yml'
+  register: found_configs
+
+- name: (Debug Found Configs)
+  ansible.builtin.debug:
+    var: found_configs
+
+- name: Read Configs
+  ansible.builtin.include_vars:
+    file: '{{ config_file.path }}'
+  loop: '{{ found_configs.files }}'
+  loop_control:
+    loop_var: 'config_file'
+
+- name: Debug Loaded Variables
+  ansible.builtin.debug:
+    msg: '{{ user_list }}'

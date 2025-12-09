@@ -3,7 +3,7 @@
   gather_facts: false
   tasks:
     - name: Load Configs
-      anisble.builtin.include_tasks: tasks/clone_configs.yml
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
 
     - name: Create a user in IAM
       amazon.aws.iam_user:

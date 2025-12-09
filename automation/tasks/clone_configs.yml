@@ -1,6 +1,0 @@
-- name: Read Configs
-  ansible.builtin.include_vars:
-    file: '{{ config_file }} '
-  loop: '{{ configs_dir }}'
-  loop_control:
-    loop_var: config_file
