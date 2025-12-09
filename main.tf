@@ -9,6 +9,24 @@ resource "aws_vpc" "main" {
   }
 }
 
+# Validate that all lists have the same length
+locals {
+  # Ensure availability zones, public subnets, and private subnets lists have matching lengths
+  max_length = max(
+    length(var.availability_zones),
+    length(var.public_subnet_cidrs),
+    length(var.private_subnet_cidrs)
+  )
+  min_length = min(
+    length(var.availability_zones),
+    length(var.public_subnet_cidrs),
+    length(var.private_subnet_cidrs)
+  )
+  
+  # This will fail the plan if lists don't match in length
+  validate_list_lengths = local.max_length == local.min_length ? true : tobool("ERROR: availability_zones, public_subnet_cidrs, and private_subnet_cidrs must all have the same length")
+}
+
 # Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
@@ -67,6 +85,9 @@ resource "aws_route_table_association" "public" {
 }
 
 # Route Table for Private Subnets
+# Note: This route table has no internet gateway route by design.
+# Private subnets are isolated from direct internet access.
+# To enable outbound internet access for private subnets, add NAT Gateway resources.
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
