@@ -1,0 +1,16 @@
+- name: AWS S3
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Load Configs
+      vars:
+        config_target: s3
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Create S3 Buckets
+      amazon.aws.s3_bucket:
+        name: '{{ s3_bucket_item.name }}'
+        state: present
+      loop: '{{ s3_bucket_list }}'
+      loop_control:
+        loop_var: s3_bucket_item

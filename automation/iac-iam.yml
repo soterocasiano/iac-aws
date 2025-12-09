@@ -1,0 +1,26 @@
+- name: AWS IAM
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Load Configs
+      vars:
+        config_target: iam
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Create a user in IAM
+      amazon.aws.iam_user:
+        name: '{{ user_item.name }}'
+        managed_policies: '{{ user_item.managed_policies | default([]) }}'
+        state: present
+      loop: '{{ user_list }}'
+      loop_control:
+        loop_var: user_item
+
+    - name: Create a role in IAM
+      amazon.aws.iam_role:
+        name: '{{ role_item.name }}'
+        assume_role_policy_document: '{{ role_item.assume_role_policy_document | to_json }}'
+        state: present
+      loop: '{{ role_list }}'
+      loop_control:
+        loop_var: role_item
