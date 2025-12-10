@@ -1,2 +1,2 @@
-s3_bucket_list:
+testing-s3-demo-bucket:
   - name: testing-s3-demo-bucket-1

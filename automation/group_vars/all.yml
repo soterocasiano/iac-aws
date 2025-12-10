@@ -1,2 +1,2 @@
 iac_aws_dir: "~/personal/iac-aws"
-configs_dir:  "{{ iac_aws_dir }}/configs"
+config_repo_dir:  "{{ iac_aws_dir }}/configs"

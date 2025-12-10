@@ -1,26 +1,40 @@
-- name: AWS IAM
+- name: AWS IAM Users
   hosts: localhost
   gather_facts: false
+  tags: [iam, iam-users]
   tasks:
     - name: Load Configs
       vars:
-        config_target: iam
+        load_config_type: iam-users
+        load_config_var: desired_iam_users
       ansible.builtin.include_tasks: tasks/copy_configs.yml
 
     - name: Create a user in IAM
       amazon.aws.iam_user:
-        name: '{{ user_item.name }}'
-        managed_policies: '{{ user_item.managed_policies | default([]) }}'
+        name: '{{ _iam_user.name }}'
+        managed_policies: '{{ _iam_user.managed_policies | default([]) }}'
         state: present
-      loop: '{{ user_list }}'
+      loop: '{{ desired_iam_users.values() | list | flatten }}'
       loop_control:
-        loop_var: user_item
+        loop_var: _iam_user
+
+- name: AWS IAM Roles
+  hosts: localhost
+  gather_facts: false
+  tags: [iam, iam-roles]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: iam-roles
+        load_config_var: desired_iam_roles
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
 
     - name: Create a role in IAM
       amazon.aws.iam_role:
-        name: '{{ role_item.name }}'
-        assume_role_policy_document: '{{ role_item.assume_role_policy_document | to_json }}'
+        name: '{{ _iam_roles.name }}'
+        assume_role_policy_document: '{{ _iam_roles.assume_role_policy_document | to_json }}'
+        managed_policies: '{{ _iam_roles.managed_policies | default([]) }}'
         state: present
-      loop: '{{ role_list }}'
+      loop: '{{ desired_iam_roles.values() | list | flatten }}'
       loop_control:
-        loop_var: role_item
+        loop_var: _iam_roles

@@ -1,8 +1,7 @@
-role_list:
+test-role-1:
   - name: test_role
     managed_policies:
       - arn:aws:iam::aws:policy/AmazonS3TablesReadOnlyAccess
-      - arn:aws:iam::aws:policy/aws-service-role/AlexaForBusinessNetworkProfileServicePolicy
     assume_role_policy_document: {
       "Version": "2012-10-17",
       "Statement": [
@@ -16,6 +15,8 @@ role_list:
         }
       ]
     }
+
+test-role-2:
   - name: test_role_2
     assume_role_policy_document: {
       "Version": "2012-10-17",
@@ -31,6 +32,7 @@ role_list:
       ]
     }
 
+s3-ec2-role:
   - name: S3_EC2_Role
     managed_policies:
       - arn:aws:iam::aws:policy/AmazonS3FullAccess
@@ -41,7 +43,10 @@ role_list:
           "Sid": "Statement1",
           "Effect": "Allow",
           "Principal": {
-            },
+            "Service": [
+              "ec2.amazonaws.com"
+            ]
+          },
           "Action": "sts:AssumeRole"
         }
       ]
