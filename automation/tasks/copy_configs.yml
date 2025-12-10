@@ -1,18 +1,10 @@
 - name: Config Target
   ansible.builtin.debug:
-    msg: "{{ config_target }}"
+    msg: "{{ load_config_type }}"
 
 - name: Find Config Files
-  ansible.builtin.find:
-    paths: '{{ configs_dir }}'
-    use_regex: no
-    recurse: true
-    patterns: "{{ ['*' + config_target + '*.yml'] if config_target is defined and config_target | length > 0 else ['*.yml'] }}"
-  register: found_configs
-
-- name: Read Configs
+  vars:
+    _paths: "{{ config_repo_dir }}/{{ load_config_type }}.yml"
   ansible.builtin.include_vars:
-    file: '{{ config_file.path }}'
-  loop: '{{ found_configs.files }}'
-  loop_control:
-    loop_var: 'config_file'
+    name: "{{ load_config_var }}"
+    file: "{{ lookup('ansible.builtin.first_found', _paths) }}"
