@@ -22,7 +22,7 @@
 - name: AWS VPC Internet Gateways
   hosts: localhost
   gather_facts: false
-  tags: [vpc, vpc-internet-gateways, vpc-route-tables]
+  tags: [vpc, vpc-internet-gateways]
   tasks:
     - name: Load Configs
       vars:
@@ -39,14 +39,6 @@
       loop: '{{ desired_vpc_igws.values() | list | flatten }}'
       loop_control:
         loop_var: _vpc_igw
-      register: _vpc_igw_returns
-
-    - name: Set VPC Internet Gateway IDs
-      ansible.builtin.set_fact:
-        "{{ _vpc_igw_return.tags.Name | replace('-', '_') }}_id": "{{ _vpc_igw_return.gateway_id }}"
-      loop: '{{ _vpc_igw_returns.results }}'
-      loop_control:
-        loop_var: _vpc_igw_return
 
 - name: AWS VPC Subnets
   hosts: localhost
@@ -71,6 +63,7 @@
       loop_control:
         loop_var: _vpc_subnet
 
+  # Route tables with internet gateway routes require internet gateways to exist first
 - name: AWS VPC Route Tables
   hosts: localhost
   gather_facts: false
@@ -87,8 +80,10 @@
         vpc_id: '{{ _vpc_route_table.vpc_id }}'
         region: '{{ _vpc_route_table.region }}'
         tags: '{{ _vpc_route_table.tags }}'
-        subnets: '{{ _vpc_route_table.subnets | get_subnet_ids_by_names(_vpc_route_table.region) }}'
-        routes: '{{ _vpc_route_table.routes }}'
+        subnets: >-
+          {{ _vpc_route_table.subnets | get_aws_resource_ids("subnet", _vpc_route_table.region) }}
+        routes: >-
+          {{ _vpc_route_table.routes | resolve_route_gateway_ids(_vpc_route_table.region) }}
         state: present
       loop: '{{ desired_vpc_route_tables.values() | list | flatten }}'
       loop_control:

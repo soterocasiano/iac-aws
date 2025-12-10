@@ -24,7 +24,7 @@ scas-vpc-a-pub-rt-1a:
       - scas-vpc-a-pub-sub-1a
     routes:
       - dest: 0.0.0.0/0
-        gateway_id: "{{ scas_vpc_a_igw_id }}"
+        gateway_id: scas-vpc-a-igw
     tags:
       Name: scas-vpc-a-pub-rt-1a
 
@@ -35,7 +35,7 @@ scas-vpc-a-pub-rt-1b:
       - scas-vpc-a-pub-sub-1b
     routes:
       - dest: 0.0.0.0/0
-        gateway_id: "{{ scas_vpc_a_igw_id }}"
+        gateway_id: scas-vpc-a-igw
     tags:
       Name: scas-vpc-a-pub-rt-1b
 
@@ -65,7 +65,7 @@ scas-vpc-b-pub-rt-1a:
       - scas-vpc-b-pub-sub-1a
     routes:
       - dest: 0.0.0.0/0
-        gateway_id: "{{ scas_vpc_b_igw_id }}"
+        gateway_id: scas-vpc-b-igw
     tags:
       Name: scas-vpc-b-pub-rt-1a
 
@@ -76,7 +76,7 @@ scas-vpc-b-pub-rt-1b:
       - scas-vpc-b-pub-sub-1b
     routes:
       - dest: 0.0.0.0/0
-        gateway_id: "{{ scas_vpc_b_igw_id }}"
+        gateway_id: scas-vpc-b-igw
     tags:
       Name: scas-vpc-b-pub-rt-1b
 
