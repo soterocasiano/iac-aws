@@ -10,31 +10,37 @@
       ansible.builtin.include_tasks: tasks/copy_configs.yml
 
     - name: Create a VPC
-      amazon.aws.iam_user:
+      amazon.aws.ec2_vpc_net:
         name: '{{ _vpc.name }}'
+        cidr_block: '{{ _vpc.cidr_block }}'
+        region: '{{ _vpc.region }}'
         state: present
       loop: '{{ desired_vpcs.values() | list | flatten }}'
       loop_control:
         loop_var: _vpc
 
-# - name: AWS VPC Subnets
-#   hosts: localhost
-#   gather_facts: false
-#   tags: [vpc]
-#   tasks:
-#     - name: Load Configs
-#       vars:
-#         load_config_type: vpc-subnets
-#         load_config_var: desired_vpc_subnets
-#       ansible.builtin.include_tasks: tasks/copy_configs.yml
+- name: AWS VPC Subnets
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-subnets]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-subnets
+        load_config_var: desired_vpc_subnets
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
 
-#     - name: Create a VPC Subnet
-#       amazon.aws.iam_user:
-#         name: '{{ _vpc_subnet.name }}'
-#         state: present
-#       loop: '{{ desired_vpc_subnets.values() | list | flatten }}'
-#       loop_control:
-#         loop_var: _vpc_subnet
+    - name: Create a VPC Subnet
+      amazon.aws.ec2_vpc_subnet:
+        vpc_id: "{{ _vpc_subnet.vpc_id }}"
+        region: "{{ _vpc_subnet.region }}"
+        cidr: "{{ _vpc_subnet.cidr }}"
+        az: "{{ _vpc_subnet.az }}"
+        tags: "{{ _vpc_subnet.tags }}"
+        state: present
+      loop: '{{ desired_vpc_subnets.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_subnet
 
 # - name: AWS VPC Route Tables
 #   hosts: localhost
