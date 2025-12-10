@@ -1,7 +1,7 @@
 # VPC A Network ACLs
 # Rule format: [rule_no, protocol, allow/deny, cidr, icmp_type, icmp_code, port_from, port_to]
 scas-vpc-a-pub-nacl:
-  - vpc_id: vpc-0d7e0ccf4886d8351
+  - vpc_name: scas-vpc-a
     region: us-east-1
     subnets:
       - scas-vpc-a-pub-sub-1a
@@ -16,7 +16,7 @@ scas-vpc-a-pub-nacl:
     name: scas-vpc-a-pub-nacl
 
 scas-vpc-a-priv-nacl:
-  - vpc_id: vpc-0d7e0ccf4886d8351
+  - vpc_name: scas-vpc-a
     region: us-east-1
     subnets:
       - scas-vpc-a-priv-sub-1a
@@ -30,7 +30,7 @@ scas-vpc-a-priv-nacl:
 
 # VPC B Network ACLs
 scas-vpc-b-pub-nacl:
-  - vpc_id: vpc-050eb3c96d9a42f39
+  - vpc_name: scas-vpc-b
     region: us-east-1
     subnets:
       - scas-vpc-b-pub-sub-1a
@@ -45,7 +45,7 @@ scas-vpc-b-pub-nacl:
     name: scas-vpc-b-pub-nacl
 
 scas-vpc-b-priv-nacl:
-  - vpc_id: vpc-050eb3c96d9a42f39
+  - vpc_name: scas-vpc-b
     region: us-east-1
     subnets:
       - scas-vpc-b-priv-sub-1a

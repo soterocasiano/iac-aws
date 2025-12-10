@@ -1,5 +1,5 @@
 scas-vpc-a-priv-sub-1a:
-  - vpc_id: vpc-0d7e0ccf4886d8351
+  - vpc_name: scas-vpc-a
     region: us-east-1
     cidr: 10.0.0.0/24
     az: us-east-1a
@@ -7,7 +7,7 @@ scas-vpc-a-priv-sub-1a:
       Name: scas-vpc-a-priv-sub-1a
 
 scas-vpc-a-pub-sub-1a:
-  - vpc_id: vpc-0d7e0ccf4886d8351
+  - vpc_name: scas-vpc-a
     region: us-east-1
     cidr: 10.0.1.0/24
     az: us-east-1a
@@ -15,7 +15,7 @@ scas-vpc-a-pub-sub-1a:
       Name: scas-vpc-a-pub-sub-1a
 
 scas-vpc-a-priv-sub-1b:
-  - vpc_id: vpc-0d7e0ccf4886d8351
+  - vpc_name: scas-vpc-a
     region: us-east-1
     cidr: 10.0.2.0/24
     az: us-east-1b
@@ -23,7 +23,7 @@ scas-vpc-a-priv-sub-1b:
       Name: scas-vpc-a-priv-sub-1b
 
 scas-vpc-a-pub-sub-1b:
-  - vpc_id: vpc-0d7e0ccf4886d8351
+  - vpc_name: scas-vpc-a
     region: us-east-1
     cidr: 10.0.3.0/24
     az: us-east-1b
@@ -31,7 +31,7 @@ scas-vpc-a-pub-sub-1b:
       Name: scas-vpc-a-pub-sub-1b
 
 scas-vpc-b-priv-sub-1a:
-  - vpc_id: vpc-050eb3c96d9a42f39
+  - vpc_name: scas-vpc-b
     region: us-east-1
     cidr: 10.1.0.0/24
     az: us-east-1a
@@ -39,7 +39,7 @@ scas-vpc-b-priv-sub-1a:
       Name: scas-vpc-b-priv-sub-1a
 
 scas-vpc-b-pub-sub-1a:
-  - vpc_id: vpc-050eb3c96d9a42f39
+  - vpc_name: scas-vpc-b
     region: us-east-1
     cidr: 10.1.1.0/24
     az: us-east-1a
@@ -47,7 +47,7 @@ scas-vpc-b-pub-sub-1a:
       Name: scas-vpc-b-pub-sub-1a
 
 scas-vpc-b-priv-sub-1b:
-  - vpc_id: vpc-050eb3c96d9a42f39
+  - vpc_name: scas-vpc-b
     region: us-east-1
     cidr: 10.1.2.0/24
     az: us-east-1b
@@ -55,7 +55,7 @@ scas-vpc-b-priv-sub-1b:
       Name: scas-vpc-b-priv-sub-1b
 
 scas-vpc-b-pub-sub-1b:
-  - vpc_id: vpc-050eb3c96d9a42f39
+  - vpc_name: scas-vpc-b
     region: us-east-1
     cidr: 10.1.3.0/24
     az: us-east-1b
