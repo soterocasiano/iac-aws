@@ -19,6 +19,35 @@
       loop_control:
         loop_var: _vpc
 
+- name: AWS VPC Internet Gateways
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-internet-gateways, vpc-route-tables]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-internet-gateways
+        load_config_var: desired_vpc_igws
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Create VPC Internet Gateway
+      amazon.aws.ec2_vpc_igw:
+        vpc_id: '{{ _vpc_igw.vpc_id }}'
+        region: '{{ _vpc_igw.region }}'
+        tags: '{{ _vpc_igw.tags }}'
+        state: present
+      loop: '{{ desired_vpc_igws.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_igw
+      register: _vpc_igw_returns
+
+    - name: Set VPC Internet Gateway IDs
+      ansible.builtin.set_fact:
+        "{{ _vpc_igw_return.tags.Name | replace('-', '_') }}_id": "{{ _vpc_igw_return.gateway_id }}"
+      loop: '{{ _vpc_igw_returns.results }}'
+      loop_control:
+        loop_var: _vpc_igw_return
+
 - name: AWS VPC Subnets
   hosts: localhost
   gather_facts: false
@@ -42,21 +71,25 @@
       loop_control:
         loop_var: _vpc_subnet
 
-# - name: AWS VPC Route Tables
-#   hosts: localhost
-#   gather_facts: false
-#   tags: [vpc]
-#   tasks:
-#     - name: Load Configs
-#       vars:
-#         load_config_type: vpc-route-tables
-#         load_config_var: desired_vpc_route_tables
-#       ansible.builtin.include_tasks: tasks/copy_configs.yml
+- name: AWS VPC Route Tables
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-route-tables]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-route-tables
+        load_config_var: desired_vpc_route_tables
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
 
-#     - name: Create a VPC Route Table
-#       amazon.aws.iam_user:
-#         name: '{{ _vpc_route_table.name }}'
-#         state: present
-#       loop: '{{ desired_vpc_route_tables.values() | list | flatten }}'
-#       loop_control:
-#         loop_var: _vpc_route_table
+    - name: Create VPC Route Tables
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: '{{ _vpc_route_table.vpc_id }}'
+        region: '{{ _vpc_route_table.region }}'
+        tags: '{{ _vpc_route_table.tags }}'
+        subnets: '{{ _vpc_route_table.subnets | get_subnet_ids_by_names(_vpc_route_table.region) }}'
+        routes: '{{ _vpc_route_table.routes }}'
+        state: present
+      loop: '{{ desired_vpc_route_tables.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_route_table
