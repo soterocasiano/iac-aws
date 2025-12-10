@@ -1,0 +1,56 @@
+- name: AWS VPC
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc
+        load_config_var: desired_vpcs
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Create a VPC
+      amazon.aws.iam_user:
+        name: '{{ _vpc.name }}'
+        state: present
+      loop: '{{ desired_vpcs.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc
+
+# - name: AWS VPC Subnets
+#   hosts: localhost
+#   gather_facts: false
+#   tags: [vpc]
+#   tasks:
+#     - name: Load Configs
+#       vars:
+#         load_config_type: vpc-subnets
+#         load_config_var: desired_vpc_subnets
+#       ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+#     - name: Create a VPC Subnet
+#       amazon.aws.iam_user:
+#         name: '{{ _vpc_subnet.name }}'
+#         state: present
+#       loop: '{{ desired_vpc_subnets.values() | list | flatten }}'
+#       loop_control:
+#         loop_var: _vpc_subnet
+
+# - name: AWS VPC Route Tables
+#   hosts: localhost
+#   gather_facts: false
+#   tags: [vpc]
+#   tasks:
+#     - name: Load Configs
+#       vars:
+#         load_config_type: vpc-route-tables
+#         load_config_var: desired_vpc_route_tables
+#       ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+#     - name: Create a VPC Route Table
+#       amazon.aws.iam_user:
+#         name: '{{ _vpc_route_table.name }}'
+#         state: present
+#       loop: '{{ desired_vpc_route_tables.values() | list | flatten }}'
+#       loop_control:
+#         loop_var: _vpc_route_table
