@@ -1,0 +1,58 @@
+# VPC A Network ACLs
+# Rule format: [rule_no, protocol, allow/deny, cidr, icmp_type, icmp_code, port_from, port_to]
+scas-vpc-a-pub-nacl:
+  - vpc_id: vpc-0d7e0ccf4886d8351
+    region: us-east-1
+    subnets:
+      - scas-vpc-a-pub-sub-1a
+      - scas-vpc-a-pub-sub-1b
+    ingress:
+      - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]       # HTTP
+      - [110, 'tcp', 'allow', '0.0.0.0/0', null, null, 443, 443]     # HTTPS
+      - [120, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]       # SSH
+      - [140, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]  # Ephemeral ports
+    egress:
+      - [100, 'all', 'allow', '0.0.0.0/0', null, null, null, null]   # All outbound
+    name: scas-vpc-a-pub-nacl
+
+scas-vpc-a-priv-nacl:
+  - vpc_id: vpc-0d7e0ccf4886d8351
+    region: us-east-1
+    subnets:
+      - scas-vpc-a-priv-sub-1a
+      - scas-vpc-a-priv-sub-1b
+    ingress:
+      - [100, 'all', 'allow', '10.0.0.0/16', null, null, null, null] # VPC CIDR
+      - [140, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]  # Ephemeral ports
+    egress:
+      - [100, 'all', 'allow', '0.0.0.0/0', null, null, null, null]   # All outbound
+    name: scas-vpc-a-priv-nacl
+
+# VPC B Network ACLs
+scas-vpc-b-pub-nacl:
+  - vpc_id: vpc-050eb3c96d9a42f39
+    region: us-east-1
+    subnets:
+      - scas-vpc-b-pub-sub-1a
+      - scas-vpc-b-pub-sub-1b
+    ingress:
+      - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]       # HTTP
+      - [110, 'tcp', 'allow', '0.0.0.0/0', null, null, 443, 443]     # HTTPS
+      - [120, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]       # SSH
+      - [140, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]  # Ephemeral ports
+    egress:
+      - [100, 'all', 'allow', '0.0.0.0/0', null, null, null, null]   # All outbound
+    name: scas-vpc-b-pub-nacl
+
+scas-vpc-b-priv-nacl:
+  - vpc_id: vpc-050eb3c96d9a42f39
+    region: us-east-1
+    subnets:
+      - scas-vpc-b-priv-sub-1a
+      - scas-vpc-b-priv-sub-1b
+    ingress:
+      - [100, 'all', 'allow', '10.1.0.0/16', null, null, null, null] # VPC CIDR
+      - [140, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]  # Ephemeral ports
+    egress:
+      - [100, 'all', 'allow', '0.0.0.0/0', null, null, null, null]   # All outbound
+    name: scas-vpc-b-priv-nacl

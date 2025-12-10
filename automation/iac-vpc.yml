@@ -88,3 +88,28 @@
       loop: '{{ desired_vpc_route_tables.values() | list | flatten }}'
       loop_control:
         loop_var: _vpc_route_table
+
+- name: AWS VPC Network ACLs
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-network-acls]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-network-acls
+        load_config_var: desired_vpc_nacls
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Create VPC Network ACLs
+      community.aws.ec2_vpc_nacl:
+        vpc_id: '{{ _vpc_nacl.vpc_id }}'
+        region: '{{ _vpc_nacl.region }}'
+        name: '{{ _vpc_nacl.name }}'
+        subnets: >-
+          {{ _vpc_nacl.subnets | get_aws_resource_ids("subnet", _vpc_nacl.region) }}
+        ingress: '{{ _vpc_nacl.ingress | default([]) }}'
+        egress: '{{ _vpc_nacl.egress | default([]) }}'
+        state: present
+      loop: '{{ desired_vpc_nacls.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_nacl
