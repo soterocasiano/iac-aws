@@ -1,0 +1,11 @@
+scas-vpc-a-igw:
+  - vpc_name: scas-vpc-a
+    region: us-east-1
+    tags:
+      Name: scas-vpc-a-igw
+
+scas-vpc-b-igw:
+  - vpc_name: scas-vpc-b
+    region: us-east-1
+    tags:
+      Name: scas-vpc-b-igw

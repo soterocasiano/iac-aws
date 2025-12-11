@@ -14,7 +14,7 @@ collections:
     source: https://github.com/ansible-collections/community.general
     type: git
   - name: amazon.aws
-    version: 7.3.0
+    version: 10.1.2
     source: https://github.com/ansible-collections/amazon.aws
     type: git
   - name: community.aws

@@ -1,0 +1,294 @@
+# Teardown playbook - removes all AWS resources defined in configs folder
+# Resources are removed in reverse dependency order
+# Usage: ansible-playbook iac-teardown.yml -e confirm_teardown=yes
+# Or with specific tags: ansible-playbook iac-teardown.yml -e confirm_teardown=yes --tags ec2
+#
+# REQUIRED: You must pass -e confirm_teardown=yes to run this playbook
+#
+# Removal order:
+#   1. EC2 Instances (must be removed before VPC resources)
+#   2. IAM Instance Profiles (must be removed before IAM roles)
+#   3. IAM Roles
+#   4. IAM Users
+#   5. S3 Buckets
+#   6. VPC Network ACLs
+#   7. VPC Route Tables
+#   8. VPC Security Groups
+#   9. VPC Internet Gateways
+#  10. VPC Subnets
+#  11. VPCs
+
+###############################################################################
+# Teardown Verification
+###############################################################################
+- name: Verify Teardown Confirmation
+  hosts: localhost
+  gather_facts: false
+  tags: [always]
+  tasks:
+    - name: Check for teardown confirmation
+      ansible.builtin.fail:
+        msg: |
+          ╔══════════════════════════════════════════════════════════════════╗
+          ║                    ⚠️  TEARDOWN PROTECTION ⚠️                     ║
+          ╠══════════════════════════════════════════════════════════════════╣
+          ║  This playbook will PERMANENTLY DELETE AWS resources!            ║
+          ║                                                                  ║
+          ║  To confirm, run with:                                           ║
+          ║    ansible-playbook iac-teardown.yml -e confirm_teardown=yes     ║
+          ║                                                                  ║
+          ║  Add --tags to limit scope (e.g., --tags vpc, --tags iam)        ║
+          ╚══════════════════════════════════════════════════════════════════╝
+      when: confirm_teardown is not defined or confirm_teardown != 'yes'
+
+    - name: Display teardown warning
+      ansible.builtin.debug:
+        msg: |
+          ⚠️  TEARDOWN CONFIRMED - Proceeding to delete AWS resources...
+      when: confirm_teardown is defined and confirm_teardown == 'yes'
+
+###############################################################################
+# EC2 Resources
+###############################################################################
+- name: Remove AWS EC2 Instances
+  hosts: localhost
+  gather_facts: false
+  tags: [ec2, ec2-instances]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: ec2-instances
+        load_config_var: desired_ec2_instances
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Terminate EC2 Instances
+      amazon.aws.ec2_instance:
+        name: '{{ _ec2_instance.name }}'
+        region: '{{ _ec2_instance.region | default("us-east-1") }}'
+        state: absent
+      loop: '{{ desired_ec2_instances.values() | list | flatten }}'
+      loop_control:
+        loop_var: _ec2_instance
+      when: desired_ec2_instances is defined and desired_ec2_instances | length > 0
+
+###############################################################################
+# IAM Resources
+###############################################################################
+- name: Remove AWS IAM Instance Profiles
+  hosts: localhost
+  gather_facts: false
+  tags: [iam, iam-instance-profiles]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: iam-instance-profiles
+        load_config_var: desired_iam_instance_profiles
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete IAM Instance Profiles
+      amazon.aws.iam_instance_profile:
+        name: '{{ _iam_profile.name }}'
+        state: absent
+      loop: '{{ desired_iam_instance_profiles.instance_profiles_list | default([]) }}'
+      loop_control:
+        loop_var: _iam_profile
+      when: desired_iam_instance_profiles.instance_profiles_list is defined
+
+- name: Remove AWS IAM Roles
+  hosts: localhost
+  gather_facts: false
+  tags: [iam, iam-roles]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: iam-roles
+        load_config_var: desired_iam_roles
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete IAM Roles
+      amazon.aws.iam_role:
+        name: '{{ _iam_role.name }}'
+        state: absent
+      loop: '{{ desired_iam_roles.values() | list | flatten }}'
+      loop_control:
+        loop_var: _iam_role
+      when: desired_iam_roles is defined and desired_iam_roles | length > 0
+
+- name: Remove AWS IAM Users
+  hosts: localhost
+  gather_facts: false
+  tags: [iam, iam-users]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: iam-users
+        load_config_var: desired_iam_users
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete IAM Users
+      amazon.aws.iam_user:
+        name: '{{ _iam_user.name }}'
+        state: absent
+      loop: '{{ desired_iam_users.values() | list | flatten }}'
+      loop_control:
+        loop_var: _iam_user
+      when: desired_iam_users is defined and desired_iam_users | length > 0
+
+###############################################################################
+# S3 Resources
+###############################################################################
+- name: Remove AWS S3 Buckets
+  hosts: localhost
+  gather_facts: false
+  tags: [s3, s3-buckets]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: s3-buckets
+        load_config_var: desired_s3_buckets
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete S3 Buckets
+      amazon.aws.s3_bucket:
+        name: '{{ _s3_bucket.name }}'
+        state: absent
+        force: true
+      loop: '{{ desired_s3_buckets.values() | list | flatten }}'
+      loop_control:
+        loop_var: _s3_bucket
+      when: desired_s3_buckets is defined and desired_s3_buckets | length > 0
+
+###############################################################################
+# VPC Resources
+###############################################################################
+- name: Remove AWS VPC Network ACLs
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-network-acls]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-network-acls
+        load_config_var: desired_vpc_nacls
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete VPC Network ACLs
+      community.aws.ec2_vpc_nacl:
+        vpc_id: '{{ _vpc_nacl.vpc_name | get_aws_resource_id("vpc", _vpc_nacl.region) }}'
+        region: '{{ _vpc_nacl.region }}'
+        name: '{{ _vpc_nacl.name }}'
+        state: absent
+      loop: '{{ desired_vpc_nacls.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_nacl
+      when: desired_vpc_nacls is defined and desired_vpc_nacls | length > 0
+
+- name: Remove AWS VPC Route Tables
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-route-tables]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-route-tables
+        load_config_var: desired_vpc_route_tables
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete VPC Route Tables
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: '{{ _vpc_route_table.vpc_name | get_aws_resource_id("vpc", _vpc_route_table.region) }}'
+        region: '{{ _vpc_route_table.region }}'
+        tags: '{{ _vpc_route_table.tags }}'
+        lookup: tag
+        state: absent
+      loop: '{{ desired_vpc_route_tables.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_route_table
+      when: desired_vpc_route_tables is defined and desired_vpc_route_tables | length > 0
+
+- name: Remove AWS VPC Security Groups
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-security-groups]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-security-groups
+        load_config_var: desired_vpc_security_groups
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete VPC Security Groups
+      amazon.aws.ec2_security_group:
+        name: '{{ _vpc_sg.name }}'
+        vpc_id: '{{ _vpc_sg.vpc_name | get_aws_resource_id("vpc", _vpc_sg.region) }}'
+        region: '{{ _vpc_sg.region }}'
+        state: absent
+      loop: '{{ desired_vpc_security_groups.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_sg
+      when: desired_vpc_security_groups is defined and desired_vpc_security_groups | length > 0
+
+- name: Remove AWS VPC Internet Gateways
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-internet-gateways]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-internet-gateways
+        load_config_var: desired_vpc_igws
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete VPC Internet Gateways
+      amazon.aws.ec2_vpc_igw:
+        vpc_id: '{{ _vpc_igw.vpc_name | get_aws_resource_id("vpc", _vpc_igw.region) }}'
+        region: '{{ _vpc_igw.region }}'
+        state: absent
+      loop: '{{ desired_vpc_igws.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_igw
+      when: desired_vpc_igws is defined and desired_vpc_igws | length > 0
+
+- name: Remove AWS VPC Subnets
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-subnets]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-subnets
+        load_config_var: desired_vpc_subnets
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete VPC Subnets
+      amazon.aws.ec2_vpc_subnet:
+        vpc_id: "{{ _vpc_subnet.vpc_name | get_aws_resource_id('vpc', _vpc_subnet.region) }}"
+        region: "{{ _vpc_subnet.region }}"
+        cidr: "{{ _vpc_subnet.cidr }}"
+        state: absent
+      loop: '{{ desired_vpc_subnets.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_subnet
+      when: desired_vpc_subnets is defined and desired_vpc_subnets | length > 0
+
+- name: Remove AWS VPCs
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-only]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc
+        load_config_var: desired_vpcs
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete VPCs
+      amazon.aws.ec2_vpc_net:
+        name: '{{ _vpc.name }}'
+        cidr_block: '{{ _vpc.cidr_block }}'
+        region: '{{ _vpc.region }}'
+        state: absent
+      loop: '{{ desired_vpcs.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc
+      when: desired_vpcs is defined and desired_vpcs | length > 0
