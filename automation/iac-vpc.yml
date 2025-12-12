@@ -63,6 +63,27 @@
       loop_control:
         loop_var: _vpc_subnet
 
+- name: AWS VPC NAT Gateways
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-nat-gateways]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-nat-gateways
+        load_config_var: desired_vpc_nat_gateways
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Create a VPC NAT Gateways
+      amazon.aws.ec2_vpc_nat_gateway:
+        subnet_id: "{{ _vpc_nat_gateway.subnet_name | get_aws_resource_id('subnet', _vpc_nat_gateway.region) }}"
+        if_exist_do_not_create: true
+        region: "{{ _vpc_nat_gateway.region }}"
+        state: present
+      loop: '{{ desired_vpc_nat_gateways.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_nat_gateway
+
   # Route tables with internet gateway routes require internet gateways to exist first
 - name: AWS VPC Route Tables
   hosts: localhost

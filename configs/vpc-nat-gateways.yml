@@ -1,0 +1,4 @@
+scas-pub-nat-gateway-a:
+  - subnet_name: scas-vpc-a-pub-sub-1a
+    region: us-east-1
+
