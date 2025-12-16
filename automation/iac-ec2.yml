@@ -1,8 +1,23 @@
 - name: AWS EC2
   hosts: localhost
   gather_facts: false
+  tags: [ec2]
   tasks:
     - name: Load Configs
       vars:
-        config_target: ec2
+        load_config_type: ec2-instances
+        load_config_var: desired_ec2_instances
       ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Create an EC2 Instance
+      amazon.aws.ec2_instance:
+        name: '{{ _ec2_instance.name }}'
+        region: '{{ _ec2_instance.region }}'
+        instance_type: '{{ _ec2_instance.instance_type }}'
+        image_id: '{{ _ec2_instance.image_id }}'
+        vpc_subnet_id: '{{ _ec2_instance.vpc_subnet_id | get_aws_resource_id("subnet", _ec2_instance.region) }}'
+        state: present
+      loop: '{{ desired_ec2_instances.values() | list | flatten }}'
+      loop_control:
+        loop_var: _ec2_instance
+

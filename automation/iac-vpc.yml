@@ -134,3 +134,28 @@
       loop: '{{ desired_vpc_nacls.values() | list | flatten }}'
       loop_control:
         loop_var: _vpc_nacl
+
+- name: AWS VPC Endpoints
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-endpoints]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-endpoints
+        load_config_var: desired_vpc_endpoints
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Create VPC Gateway Endpoints
+      amazon.aws.ec2_vpc_endpoint:
+        vpc_id: '{{ _vpc_endpoint.vpc_name | get_aws_resource_id("vpc", _vpc_endpoint.region) }}'
+        region: '{{ _vpc_endpoint.region }}'
+        service: 'com.amazonaws.{{ _vpc_endpoint.region }}.{{ _vpc_endpoint.service }}'
+        vpc_endpoint_type: Gateway
+        route_table_ids: >-
+          {{ _vpc_endpoint.route_table_names | get_aws_resource_ids("route_table", _vpc_endpoint.region) }}
+        tags: '{{ _vpc_endpoint.tags }}'
+        state: present
+      loop: '{{ desired_vpc_endpoints.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_endpoint

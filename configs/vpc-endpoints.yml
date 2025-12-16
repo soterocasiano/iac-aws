@@ -1,0 +1,11 @@
+# VPC Gateway Endpoints for S3
+# Gateway endpoint allowing private subnets in scas-vpc-a to access S3
+scas-vpc-a-s3-endpoint:
+  - vpc_name: scas-vpc-a
+    region: us-east-1
+    service: s3
+    route_table_names:
+      - scas-vpc-a-priv-rt-1a
+      - scas-vpc-a-priv-rt-1b
+    tags:
+      Name: scas-vpc-a-s3-endpoint
