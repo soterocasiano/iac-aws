@@ -1,4 +1,6 @@
 instance_profiles_list:
   - name: S3_EC2_Profile
     role: S3_EC2_Role
+  - name: SSM_EC2_Profile
+    role: SSM_EC2_Role
     

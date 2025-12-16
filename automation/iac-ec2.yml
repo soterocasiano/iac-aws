@@ -16,6 +16,9 @@
         instance_type: '{{ _ec2_instance.instance_type }}'
         image_id: '{{ _ec2_instance.image_id }}'
         vpc_subnet_id: '{{ _ec2_instance.vpc_subnet_id | get_aws_resource_id("subnet", _ec2_instance.region) }}'
+        security_groups: >-
+          {{ _ec2_instance.security_groups | default([]) | get_aws_resource_ids("security_group", _ec2_instance.region) }}
+        instance_role: '{{ _ec2_instance.instance_profile | default(omit) }}'
         state: present
       loop: '{{ desired_ec2_instances.values() | list | flatten }}'
       loop_control:

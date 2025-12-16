@@ -34,3 +34,6 @@ scas-a-s3-client-1a:
   instance_type: t2.micro
   image_id: ami-068c0051b15cdb816
   vpc_subnet_id: scas-vpc-a-priv-sub-1a
+  security_groups:
+    - scas-vpc-a-s3-ssm-sg
+  instance_profile: SSM_EC2_Profile
