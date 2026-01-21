@@ -1,0 +1,13 @@
+{
+    "name": "iac-aws",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^18",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@pulumi/aws": "^7.16.0",
+        "@pulumi/awsx": "^3.1.0",
+        "@pulumi/pulumi": "^3.216.0"
+    }
+}
