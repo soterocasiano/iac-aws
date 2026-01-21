@@ -1,2 +1,8 @@
 testing-s3-demo-bucket:
   - name: testing-s3-demo-bucket-1
+    region: us-east-1
+
+# S3 bucket accessible via VPC gateway endpoint from scas-vpc-a private subnets
+scas-vpc-a-data-bucket:
+  - name: scas-vpc-a-data-bucket
+    region: us-east-1

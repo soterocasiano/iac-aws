@@ -1,16 +1,19 @@
 - name: AWS S3
   hosts: localhost
   gather_facts: false
+  tags: [s3]
   tasks:
     - name: Load Configs
       vars:
-        config_target: s3
+        load_config_type: s3-buckets
+        load_config_var: desired_s3_buckets
       ansible.builtin.include_tasks: tasks/copy_configs.yml
 
     - name: Create S3 Buckets
       amazon.aws.s3_bucket:
-        name: '{{ s3_bucket_item.name }}'
+        name: '{{ _s3_bucket.name }}'
+        region: '{{ _s3_bucket.region | default("us-east-1") }}'
         state: present
-      loop: '{{ s3_bucket_list }}'
+      loop: '{{ desired_s3_buckets.values() | list | flatten }}'
       loop_control:
-        loop_var: s3_bucket_item
+        loop_var: _s3_bucket

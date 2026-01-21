@@ -1,0 +1,55 @@
+# VPC Gateway Endpoints for S3
+# Gateway endpoint allowing private subnets in scas-vpc-a to access S3
+scas-vpc-a-s3-endpoint:
+  - vpc_name: scas-vpc-a
+    region: us-east-1
+    service: s3
+    endpoint_type: Gateway
+    route_table_names:
+      - scas-vpc-a-priv-rt-1a
+      - scas-vpc-a-priv-rt-1b
+    tags:
+      Name: scas-vpc-a-s3-endpoint
+
+# VPC Interface Endpoints for SSM
+# SSM endpoint for Systems Manager access
+scas-vpc-a-ssm-endpoint:
+  - vpc_name: scas-vpc-a
+    region: us-east-1
+    service: ssm
+    endpoint_type: Interface
+    subnet_names:
+      - scas-vpc-a-priv-sub-1a
+      - scas-vpc-a-priv-sub-1b
+    security_group_names:
+      - scas-vpc-a-vpce-sg
+    tags:
+      Name: scas-vpc-a-ssm-endpoint
+
+# SSM Messages endpoint for Session Manager
+scas-vpc-a-ssmmessages-endpoint:
+  - vpc_name: scas-vpc-a
+    region: us-east-1
+    service: ssmmessages
+    endpoint_type: Interface
+    subnet_names:
+      - scas-vpc-a-priv-sub-1a
+      - scas-vpc-a-priv-sub-1b
+    security_group_names:
+      - scas-vpc-a-vpce-sg
+    tags:
+      Name: scas-vpc-a-ssmmessages-endpoint
+
+# EC2 Messages endpoint for SSM
+scas-vpc-a-ec2messages-endpoint:
+  - vpc_name: scas-vpc-a
+    region: us-east-1
+    service: ec2messages
+    endpoint_type: Interface
+    subnet_names:
+      - scas-vpc-a-priv-sub-1a
+      - scas-vpc-a-priv-sub-1b
+    security_group_names:
+      - scas-vpc-a-vpce-sg
+    tags:
+      Name: scas-vpc-a-ec2messages-endpoint

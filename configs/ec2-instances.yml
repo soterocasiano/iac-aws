@@ -1,23 +1,39 @@
 scas-a-web-1a:
   name: "scas-a-web-1a"
+  region: us-east-1
   instance_type: t2.micro
-  image_id: ami-1234567890
+  image_id: ami-068c0051b15cdb816
   vpc_subnet_id: scas-vpc-a-pub-sub-1a
 
 scas-a-app-1a:
   name: "scas-a-app-1a"
+  region: us-east-1
   instance_type: t2.micro
-  image_id: ami-1234567890
+  image_id: ami-068c0051b15cdb816
   vpc_subnet_id: scas-vpc-a-priv-sub-1a
 
 scas-b-web-1b:
   name: "scas-b-web-1b"
+  region: us-east-1
   instance_type: t2.micro
-  image_id: ami-1234567890
+  image_id: ami-068c0051b15cdb816
   vpc_subnet_id: scas-vpc-b-pub-sub-1b
 
 scas-b-app-1b:
   name: "scas-b-app-1b"
+  region: us-east-1
   instance_type: t2.micro
-  image_id: ami-1234567890
+  image_id: ami-068c0051b15cdb816
   vpc_subnet_id: scas-vpc-b-priv-sub-1b
+
+# EC2 instance in private subnet with S3 gateway endpoint access
+# This instance accesses scas-vpc-a-data-bucket via VPC gateway endpoint
+scas-a-s3-client-1a:
+  name: "scas-a-s3-client-1a"
+  region: us-east-1
+  instance_type: t2.micro
+  image_id: ami-068c0051b15cdb816
+  vpc_subnet_id: scas-vpc-a-priv-sub-1a
+  security_groups:
+    - scas-vpc-a-s3-ssm-sg
+  instance_profile: SSM_EC2_Profile

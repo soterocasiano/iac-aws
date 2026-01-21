@@ -38,3 +38,23 @@
       loop: '{{ desired_iam_roles.values() | list | flatten }}'
       loop_control:
         loop_var: _iam_roles
+
+- name: AWS IAM Instance Profiles
+  hosts: localhost
+  gather_facts: false
+  tags: [iam, iam-instance-profiles]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: iam-instance-profiles
+        load_config_var: desired_iam_instance_profiles
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Create IAM Instance Profiles
+      amazon.aws.iam_instance_profile:
+        name: '{{ _instance_profile.name }}'
+        role: '{{ _instance_profile.role }}'
+        state: present
+      loop: '{{ desired_iam_instance_profiles.instance_profiles_list }}'
+      loop_control:
+        loop_var: _instance_profile

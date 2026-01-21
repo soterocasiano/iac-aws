@@ -225,6 +225,50 @@ def get_subnet_ids_by_names(subnet_names, region='us-east-1'):
     return get_aws_resource_ids(subnet_names, 'subnet', region)
 
 
+def get_nat_gateway_by_subnet(subnet_name, region='us-east-1'):
+    """
+    Lookup a NAT Gateway ID by the subnet it's in.
+
+    Args:
+        subnet_name: The Name tag of the subnet containing the NAT Gateway
+        region: AWS region (default: us-east-1)
+
+    Returns:
+        The NAT Gateway ID if found, None otherwise
+    """
+    if not HAS_BOTO3:
+        raise AnsibleFilterError("boto3 is required for get_nat_gateway_by_subnet filter")
+
+    try:
+        # First, get the subnet ID from the subnet name
+        subnet_id = get_aws_resource_id(subnet_name, 'subnet', region)
+        if not subnet_id:
+            return None
+
+        # Then look up NAT Gateways in that subnet
+        client = boto3.client('ec2', region_name=region)
+        response = client.describe_nat_gateways(
+            Filters=[
+                {
+                    'Name': 'subnet-id',
+                    'Values': [subnet_id]
+                },
+                {
+                    'Name': 'state',
+                    'Values': ['available', 'pending']
+                }
+            ]
+        )
+
+        nat_gateways = response.get('NatGateways', [])
+        if nat_gateways:
+            return nat_gateways[0]['NatGatewayId']
+        return None
+
+    except ClientError as e:
+        raise AnsibleFilterError(f"AWS API error: {e}")
+
+
 class FilterModule:
     """Ansible filter plugin for AWS operations."""
 
@@ -234,6 +278,7 @@ class FilterModule:
             'get_aws_resource_id': get_aws_resource_id,
             'get_aws_resource_ids': get_aws_resource_ids,
             'resolve_route_gateway_ids': resolve_route_gateway_ids,
+            'get_nat_gateway_by_subnet': get_nat_gateway_by_subnet,
             # Legacy filters for backwards compatibility
             'get_subnet_id_by_name': get_subnet_id_by_name,
             'get_subnet_ids_by_names': get_subnet_ids_by_names,

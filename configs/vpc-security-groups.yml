@@ -1,0 +1,53 @@
+# Security group for VPC interface endpoints (SSM)
+scas-vpc-a-vpce-sg:
+  - vpc_name: scas-vpc-a
+    region: us-east-1
+    name: scas-vpc-a-vpce-sg
+    description: Security group for VPC interface endpoints (SSM)
+    rules:
+      # Allow HTTPS inbound from VPC CIDR
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 10.0.0.0/16
+        rule_desc: HTTPS from VPC for SSM endpoints
+    rules_egress:
+      # Allow all outbound
+      - proto: -1
+        from_port: -1
+        to_port: -1
+        cidr_ip: 0.0.0.0/0
+        rule_desc: Allow all outbound
+    tags:
+      Name: scas-vpc-a-vpce-sg
+      Purpose: VPC Interface Endpoints
+
+# Security group for EC2 instances with S3 and SSM access
+scas-vpc-a-s3-ssm-sg:
+  - vpc_name: scas-vpc-a
+    region: us-east-1
+    name: scas-vpc-a-s3-ssm-sg
+    description: Security group for EC2 instances accessing S3 via VPC endpoint and SSM
+    rules:
+      # Allow HTTPS outbound for SSM endpoints
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+        rule_desc: HTTPS for SSM and S3 API access
+    rules_egress:
+      # Allow HTTPS outbound for SSM and S3
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+        rule_desc: HTTPS for SSM and S3 API access
+      # Allow all outbound traffic within VPC
+      - proto: -1
+        from_port: -1
+        to_port: -1
+        cidr_ip: 10.0.0.0/16
+        rule_desc: All traffic within VPC
+    tags:
+      Name: scas-vpc-a-s3-ssm-sg
+      Purpose: S3 and SSM access

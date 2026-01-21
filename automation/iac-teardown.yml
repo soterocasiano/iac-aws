@@ -63,9 +63,11 @@
 
     - name: Terminate EC2 Instances
       amazon.aws.ec2_instance:
-        name: '{{ _ec2_instance.name }}'
-        region: '{{ _ec2_instance.region | default("us-east-1") }}'
         state: absent
+        region: '{{ _ec2_instance.region | default("us-east-1") }}'
+        filters:
+          "tag:Name": '{{ _ec2_instance.name }}'
+          instance-state-name: ['pending', 'running', 'stopping', 'stopped']
       loop: '{{ desired_ec2_instances.values() | list | flatten }}'
       loop_control:
         loop_var: _ec2_instance
@@ -227,6 +229,31 @@
       loop_control:
         loop_var: _vpc_sg
       when: desired_vpc_security_groups is defined and desired_vpc_security_groups | length > 0
+
+- name: Remove AWS VPC NAT Gateways
+  hosts: localhost
+  gather_facts: false
+  tags: [vpc, vpc-nat-gateways]
+  tasks:
+    - name: Load Configs
+      vars:
+        load_config_type: vpc-nat-gateways
+        load_config_var: desired_vpc_nat_gateways
+      ansible.builtin.include_tasks: tasks/copy_configs.yml
+
+    - name: Delete VPC NAT Gateways
+      amazon.aws.ec2_vpc_nat_gateway:
+        nat_gateway_id: "{{ _vpc_nat_gateway.subnet_name | get_nat_gateway_by_subnet(_vpc_nat_gateway.region) }}"
+        region: '{{ _vpc_nat_gateway.region }}'
+        state: absent
+        wait: true
+        release_eip: true
+      loop: '{{ desired_vpc_nat_gateways.values() | list | flatten }}'
+      loop_control:
+        loop_var: _vpc_nat_gateway
+      when:
+        - desired_vpc_nat_gateways is defined and desired_vpc_nat_gateways | length > 0
+        - _vpc_nat_gateway.subnet_name | get_nat_gateway_by_subnet(_vpc_nat_gateway.region) is not none
 
 - name: Remove AWS VPC Internet Gateways
   hosts: localhost
