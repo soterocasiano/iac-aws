@@ -2,6 +2,15 @@
 
 Infrastructure as Code (IaC) for AWS using Ansible - A modular, declarative approach to managing AWS cloud resources.
 
+## Documentation
+
+- 🚀 [Quick Reference](docs/QUICK_REFERENCE.md) - Common commands and patterns at a glance
+- 📖 [Configuration Guide](docs/CONFIGURATION_GUIDE.md) - Detailed configuration reference for all resource types
+- 🏗️ [Architecture](docs/ARCHITECTURE.md) - System design and architecture documentation
+- 📝 [Examples](docs/EXAMPLES.md) - Complete examples for common scenarios
+- 🔧 [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
+- 🤝 [Contributing](docs/CONTRIBUTING.md) - How to contribute to this project
+
 ## Overview
 
 This repository provides Ansible-based automation for provisioning and managing AWS infrastructure in a repeatable, idempotent manner. It separates infrastructure definitions (configuration files) from automation logic (playbooks), making it easy to version control your infrastructure and apply changes safely.
